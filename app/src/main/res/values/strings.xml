@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Task Keeper</string>
+    <string name="button_add">Add</string>
+    <string name="button_add_hint">Add a new task</string>
+
+</resources>
