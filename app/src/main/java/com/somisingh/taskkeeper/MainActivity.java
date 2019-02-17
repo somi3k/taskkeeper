@@ -1,6 +1,8 @@
 package com.somisingh.taskkeeper;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static final int EDIT_REQUEST_CODE = 20;
+    public static final String ITEM_TEXT = "itemText";
+    public static final String ITEM_POSITION = "itemPosition";
 
     private ArrayList<String> items;
     private ArrayAdapter<String> mAdapter;
@@ -59,6 +64,30 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(TAG, "Item edit called");
+                Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
+                intent.putExtra(ITEM_TEXT, items.get(position));
+                intent.putExtra(ITEM_POSITION, position);
+                startActivityForResult(intent, EDIT_REQUEST_CODE);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == EDIT_REQUEST_CODE) {
+            String updatedTask = data.getExtras().getString(ITEM_TEXT);
+            int position = data.getExtras().getInt(ITEM_POSITION);
+            items.set(position, updatedTask);
+            mAdapter.notifyDataSetChanged();
+            writeItems();
+            Toast.makeText(getApplicationContext(), "Task updated successfully", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private File getDataFile() {
